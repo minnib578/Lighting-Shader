@@ -1,0 +1,12 @@
+#version 330 core
+
+flat in vec4 color_f;
+smooth in vec4 color;
+out vec4 fragecolor;
+uniform int shader_model;
+
+void main()
+{	
+ if (shader_model==1){fragecolor=color;}
+ else {fragecolor=color_f;}
+} 

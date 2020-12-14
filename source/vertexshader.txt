@@ -1,0 +1,42 @@
+#version 330 core
+
+layout (location = 0)  in vec3 vertPosition;
+layout(location = 1) in vec3 normal;
+
+uniform mat4 modelviewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightpos;
+uniform vec3 viewpos;
+uniform vec4 ambient;
+uniform vec4 df;
+uniform vec4 sp;
+uniform vec4 Global_amb;
+uniform int light_switch;
+uniform vec4 objectcolor;
+vec4 specular;
+vec4 diffuse;
+
+flat out vec4 color_f;
+smooth out vec4 color;
+
+void main()
+{	
+	gl_Position = projectionMatrix *modelviewMatrix* vec4(vertPosition, 1.0);
+	vec3 norm=normalize(normal);
+	vec3 lightDir=normalize(lightpos.xyz-vertPosition);
+	float diff=max(dot(norm, lightDir),0.0);
+	diffuse = df*diff;
+
+	vec3 viewDir = normalize(viewpos - vertPosition);
+	vec3 reflectDir = reflect(lightDir, norm);
+	float spec = pow(max(dot(viewDir, reflectDir),0.0),10.0);
+	specular = spec * sp;
+	if (light_switch == 1) {
+	    color = vec4(vec3((Global_amb.rgb + ambient.rgb+ diffuse.rgb)*objectcolor.rgb + specular.rgb ),1.0);
+	}
+	else {
+	    color = objectcolor;
+	}
+	color_f=vec4(color);
+
+}
